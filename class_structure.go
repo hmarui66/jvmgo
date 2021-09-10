@@ -189,3 +189,7 @@ func (c *ClassStructure) readAttributes(r io.Reader) error {
 
 	return nil
 }
+
+func (c *ClassStructure) GetCpInfo(idx uint16) *CpInfo {
+	return c.ConstantPool[idx-1]
+}

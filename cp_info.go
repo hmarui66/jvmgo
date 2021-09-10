@@ -12,6 +12,11 @@ type (
 		Tag  ConstantKind
 		Info []byte
 	}
+	Fieldref struct {
+		Tag              ConstantKind
+		ClassIndex       uint16
+		NameAndTypeIndex uint16
+	}
 )
 
 const (
@@ -136,5 +141,21 @@ func (c *CpInfo) GetAsUTF8String() (string, error) {
 		return "", fmt.Errorf("cp info is invalid as kind UTF8")
 	}
 	return string(c.Info[2:]), nil
+
+}
+
+func (c *CpInfo) ToFieldRef() (*Fieldref, error) {
+	if c.Tag != ConstantKindFieldref {
+		return nil, fmt.Errorf("constant kind mismatch. kind should be field ref")
+	}
+	if len(c.Info) < 2 {
+		return nil, fmt.Errorf("cp info is invalid as kind field ref")
+	}
+
+	return &Fieldref{
+		Tag:              c.Tag,
+		ClassIndex:       binary.BigEndian.Uint16(c.Info[:2]),
+		NameAndTypeIndex: binary.BigEndian.Uint16(c.Info[2:]),
+	}, nil
 
 }

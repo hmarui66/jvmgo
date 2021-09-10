@@ -13,26 +13,6 @@ type (
 		AttributeLength    uint32
 		Info               []byte
 	}
-
-	CodeAttribute struct {
-		AttributeNameIndex   uint16
-		AttributeLength      uint32
-		MaxStack             uint16
-		MaxLocals            uint16
-		CodeLength           uint32
-		Code                 []byte
-		ExceptionTableLength uint16
-		ExceptionTable       []*Exception
-		AttributesCount      uint16
-		Attributes           []*AttributeInfo
-	}
-
-	Exception struct {
-		StartPC   uint16
-		EndPC     uint16
-		HandlerPC uint16
-		CatchType uint16
-	}
 )
 
 func readAttribute(r io.Reader) (*AttributeInfo, error) {
@@ -60,9 +40,6 @@ func readAttribute(r io.Reader) (*AttributeInfo, error) {
 }
 
 func (a *AttributeInfo) toCodeAttribute() (*CodeAttribute, error) {
-	if a == nil {
-		return nil, fmt.Errorf("toCodeAttribute: AttributeInfo is nil")
-	}
 	r := bytes.NewBuffer(a.Info)
 	ret := &CodeAttribute{
 		AttributeNameIndex: a.AttributeNameIndex,
