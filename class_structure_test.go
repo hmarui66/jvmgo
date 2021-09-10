@@ -2,6 +2,7 @@ package jvmgo
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"testing"
@@ -29,6 +30,12 @@ func TestDecodeClassStructure(t *testing.T) {
 
 	require.Equal(t, uint16(2), class.MethodsCount)
 	require.Len(t, class.Methods, 2)
+
+	for i := range class.Methods[1].Attributes {
+		code, err := class.Methods[1].Attributes[i].toCodeAttribute()
+		require.NoError(t, err)
+		fmt.Println(code.Code)
+	}
 
 	require.Equal(t, uint16(1), class.AttributesCount)
 	require.Len(t, class.Attributes, 1)

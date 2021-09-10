@@ -127,3 +127,14 @@ func readCpInfo(r io.Reader) (*CpInfo, error) {
 		Info: info,
 	}, nil
 }
+
+func (c *CpInfo) GetAsUTF8String() (string, error) {
+	if c.Tag != ConstantKindUTF8 {
+		return "", fmt.Errorf("constant kind mismatch. kind should be UTF8")
+	}
+	if len(c.Info) < 3 {
+		return "", fmt.Errorf("cp info is invalid as kind UTF8")
+	}
+	return string(c.Info[2:]), nil
+
+}
