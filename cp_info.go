@@ -17,6 +17,20 @@ type (
 		ClassIndex       uint16
 		NameAndTypeIndex uint16
 	}
+	Methodref struct {
+		Tag              ConstantKind
+		ClassIndex       uint16
+		NameAndTypeIndex uint16
+	}
+	Class struct {
+		Tag       ConstantKind
+		NameIndex uint16
+	}
+	NameAndType struct {
+		Tag             ConstantKind
+		NameIndex       uint16
+		DescriptorIndex uint16
+	}
 )
 
 const (
@@ -141,7 +155,6 @@ func (c *CpInfo) GetAsUTF8String() (string, error) {
 		return "", fmt.Errorf("cp info is invalid as kind UTF8")
 	}
 	return string(c.Info[2:]), nil
-
 }
 
 func (c *CpInfo) ToFieldRef() (*Fieldref, error) {
@@ -157,5 +170,47 @@ func (c *CpInfo) ToFieldRef() (*Fieldref, error) {
 		ClassIndex:       binary.BigEndian.Uint16(c.Info[:2]),
 		NameAndTypeIndex: binary.BigEndian.Uint16(c.Info[2:]),
 	}, nil
+}
 
+func (c *CpInfo) ToClass() (*Class, error) {
+	if c.Tag != ConstantKindClass {
+		return nil, fmt.Errorf("constant kind mismatch. kind should be class")
+	}
+	if len(c.Info) < 1 {
+		return nil, fmt.Errorf("cp info is invalid as kind class")
+	}
+
+	return &Class{
+		Tag:       c.Tag,
+		NameIndex: binary.BigEndian.Uint16(c.Info),
+	}, nil
+}
+
+func (c *CpInfo) ToNameAndType() (*NameAndType, error) {
+	if c.Tag != ConstantKindNameAndType {
+		return nil, fmt.Errorf("constant kind mismatch. kind should be name and type")
+	}
+	if len(c.Info) < 2 {
+		return nil, fmt.Errorf("cp info is invalid as kind name and type")
+	}
+	return &NameAndType{
+		Tag:             c.Tag,
+		NameIndex:       binary.BigEndian.Uint16(c.Info[:2]),
+		DescriptorIndex: binary.BigEndian.Uint16(c.Info[2:]),
+	}, nil
+}
+
+func (c *CpInfo) ToMethodRef() (*Methodref, error) {
+	if c.Tag != ConstantKindMethodref {
+		return nil, fmt.Errorf("constant kind mismatch. kind should be method ref")
+	}
+	if len(c.Info) < 2 {
+		return nil, fmt.Errorf("cp info is invalid as kind method ref")
+	}
+
+	return &Methodref{
+		Tag:              c.Tag,
+		ClassIndex:       binary.BigEndian.Uint16(c.Info[:2]),
+		NameAndTypeIndex: binary.BigEndian.Uint16(c.Info[2:]),
+	}, nil
 }

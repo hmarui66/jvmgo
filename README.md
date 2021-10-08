@@ -5,8 +5,8 @@ toy jvm implementation.
 ## TODO
 
 - [x] Decode Class File
-- [ ] Decode Code Attribute
-- [ ] Execute Ope
+- [x] Decode Code Attribute
+- [x] Execute Ope
 
 ## Ref
 
